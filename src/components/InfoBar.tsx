@@ -2,9 +2,10 @@ import { View, StyleSheet } from "react-native";
 import { base } from "../assets/styles";
 import Typography from "./Typography";
 import { COLORS } from "../utils/constants";
+import { Sprite } from "../utils/types";
 
 type Props = {
-  sprite: "CAT" | "BALL";
+  sprite: Sprite;
   coordinates: { x: number; y: number };
 };
 

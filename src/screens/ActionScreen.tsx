@@ -2,15 +2,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { base } from "../assets/styles";
 import Typography from "../components/Typography";
 import { COLORS } from "../utils/constants";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import DraggableFlatList, {
-  DragEndParams,
-} from "react-native-draggable-flatlist";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { faBars, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useStore } from "../store/store";
 import { ActionScreenScreenProps } from "../navigation/types";
+import { Sprite } from "../utils/types";
+import Drawer from "../components/Drawer";
 
 const initialLeftList = [
   { id: "1", label: "Move X by 10", action: { x: 10, y: 0 } },
@@ -22,30 +20,96 @@ const initialLeftList = [
 
 const ActionScreen = ({ route }: ActionScreenScreenProps) => {
   const { params } = route;
+  const [sprite, setSprite] = useState<Sprite>(params.sprite);
   const [leftList] = useState(initialLeftList);
-  const [isCat, setIsCat] = useState(params.isCat);
-  const { showBall, catAction, ballAction, setBallAction, setCatAction } =
-    useStore();
+  const {
+    showBall,
+    showApple,
+    showBanana,
+    showDog,
+    catAction,
+    ballAction,
+    appleAction,
+    bananaAction,
+    dogAction,
+    setCatAction,
+    setBallAction,
+    setAppleAction,
+    setBananaAction,
+    setDogAction,
+  } = useStore();
+
+  const drawerOptions = [
+    {
+      label: `Cat`,
+      onPress: () => {
+        setSprite("CAT");
+      },
+    },
+    showBall && {
+      label: `Ball`,
+      onPress: () => {
+        setSprite("BALL");
+      },
+    },
+    showApple && {
+      label: `Apple`,
+      onPress: () => {
+        setSprite("APPLE");
+      },
+    },
+    showBanana && {
+      label: `Banana`,
+      onPress: () => {
+        setSprite("BANANA");
+      },
+    },
+    showDog && {
+      label: `dog`,
+      onPress: () => {
+        setSprite("DOG");
+      },
+    },
+  ].filter(Boolean);
 
   const addItemToRightList = (item: any) => {
-    if (isCat) {
-      setCatAction([
-        ...catAction,
-        { ...item, key: `${item.id}-${Date.now()}` },
-      ]);
-    } else {
-      setBallAction([
-        ...ballAction,
-        { ...item, key: `${item.id}-${Date.now()}` },
-      ]);
+    const newItem = { ...item, key: `${item.id}-${Date.now()}` };
+    switch (sprite) {
+      case "CAT":
+        setCatAction([...catAction, newItem]);
+        break;
+      case "BALL":
+        setBallAction([...ballAction, newItem]);
+        break;
+      case "APPLE":
+        setAppleAction([...appleAction, newItem]);
+        break;
+      case "BANANA":
+        setBananaAction([...bananaAction, newItem]);
+        break;
+      case "DOG":
+        setDogAction([...dogAction, newItem]);
+        break;
     }
   };
 
   const deleteItemFromRightList = (key: any) => {
-    if (isCat) {
-      setCatAction(catAction.filter((item: any) => item.key !== key));
-    } else {
-      setBallAction(ballAction.filter((item: any) => item.key !== key));
+    switch (sprite) {
+      case "CAT":
+        setCatAction(catAction.filter((item: any) => item.key !== key));
+        break;
+      case "BALL":
+        setBallAction(ballAction.filter((item: any) => item.key !== key));
+        break;
+      case "APPLE":
+        setAppleAction(appleAction.filter((item: any) => item.key !== key));
+        break;
+      case "BANANA":
+        setBananaAction(bananaAction.filter((item: any) => item.key !== key));
+        break;
+      case "DOG":
+        setDogAction(dogAction.filter((item: any) => item.key !== key));
+        break;
     }
   };
 
@@ -61,8 +125,7 @@ const ActionScreen = ({ route }: ActionScreenScreenProps) => {
   const renderRightItem = ({ item, drag, isActive }: any) => (
     <TouchableOpacity onLongPress={drag}>
       <View style={[pageStyles.item, isActive && pageStyles.activeItem]}>
-        <FontAwesomeIcon icon={faBars} color={COLORS.white} />
-        <Typography textColor="white" style={{ maxWidth: "70%" }}>
+        <Typography textColor="white" style={{ maxWidth: "80%" }}>
           {item.label}
         </Typography>
         <TouchableOpacity onPress={() => deleteItemFromRightList(item.key)}>
@@ -73,7 +136,7 @@ const ActionScreen = ({ route }: ActionScreenScreenProps) => {
   );
 
   return (
-    <GestureHandlerRootView style={pageStyles.container}>
+    <View style={pageStyles.container}>
       <View style={[pageStyles.actionlist, base.mr_0]}>
         <Typography style={pageStyles.head} align="center">
           Select Code
@@ -91,54 +154,46 @@ const ActionScreen = ({ route }: ActionScreenScreenProps) => {
         </Typography>
         <View style={pageStyles.underline}></View>
         <View style={base.row}>
-          <TouchableOpacity
-            style={[
-              pageStyles.head,
-
-              base.mr_xs,
-              showBall && base.w_48,
-              isCat ? pageStyles.headActive : pageStyles.headNot,
-            ]}
-            disabled={!showBall}
-            onPress={() => {
-              setIsCat(true);
-            }}
-          >
-            <Typography align="center" textColor={isCat ? "primary" : "black"}>
-              CAT
-            </Typography>
-          </TouchableOpacity>
-          {showBall && (
-            <TouchableOpacity
+          <Drawer options={drawerOptions} callback={() => {}}>
+            <View
               style={[
                 pageStyles.head,
-                base.w_48,
-                !isCat ? pageStyles.headActive : pageStyles.headNot,
+                base.mr_xs,
+                pageStyles.headActive,
+                base.row,
+                base.justify_around,
               ]}
-              onPress={() => {
-                setIsCat(false);
-              }}
             >
-              <Typography
-                textColor={!isCat ? "primary" : "black"}
-                align="center"
-              >
-                BALL
+              <Typography align="center" textColor={"primary"}>
+                {sprite}
               </Typography>
-            </TouchableOpacity>
-          )}
+              <FontAwesomeIcon icon={faAngleDown} color={COLORS.primary} />
+            </View>
+          </Drawer>
         </View>
         <View style={pageStyles.underline}></View>
-        <DraggableFlatList
-          data={isCat ? catAction : ballAction}
-          keyExtractor={(item: any) => item.key}
+        <FlatList
+          data={
+            sprite === "CAT"
+              ? catAction
+              : sprite === "BALL"
+              ? ballAction
+              : sprite === "APPLE"
+              ? appleAction
+              : sprite === "BANANA"
+              ? bananaAction
+              : dogAction
+          }
+          keyExtractor={(item, index) => `${item.id}${index}`}
           renderItem={renderRightItem}
-          onDragEnd={({ data }: DragEndParams<any>) =>
-            isCat ? setCatAction(data) : setBallAction(data)
+          ListEmptyComponent={
+            <Typography align="center" textColor="gray" style={[base.mt_l, base.f_14]}>
+              No actions have been set for sprite: {sprite}
+            </Typography>
           }
         />
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 };
 
@@ -173,11 +228,6 @@ const pageStyles = StyleSheet.create({
     ...base.p_s,
     borderColor: COLORS.primary,
     borderWidth: 3,
-  },
-  headNot: {
-    ...base.p_s,
-    borderWidth: 1,
-    borderColor: COLORS.black,
   },
   item: {
     ...base.p_s,

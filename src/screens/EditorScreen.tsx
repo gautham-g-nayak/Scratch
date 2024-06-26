@@ -17,30 +17,53 @@ import Typography from "../components/Typography";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faPlay, faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { useStore } from "../store/store";
+import { Sprite } from "../utils/types";
 
 type Coordinates = { x: number; y: number };
-type Sprite = "CAT" | "BALL";
 
 function EditorScreen(): JSX.Element {
   const initial_coordinates = {
     x: 0,
     y: 0,
   };
+
   const [sprite, setSprite] = useState<Sprite>("CAT");
+
   const {
     showBall,
     catAction,
     ballAction,
+    dogAction,
+    bananaAction,
+    appleAction,
+    showApple,
+    showBanana,
+    showDog,
+    setShowDog,
+    setShowBanana,
+    setShowApple,
     setShowBall,
     setBallAction,
     setCatAction,
+    setDogAction,
+    setAppleAction,
+    setBananaAction,
   } = useStore();
-  const [showCat, setShowCat] = useState<Boolean>(true);
+
+  const [showCat, setShowCat] = useState<boolean>(true);
+
   const [coordinates, setCoordinates] =
     useState<Coordinates>(initial_coordinates);
+
   const [catCoordinates, setCatCoordinates] =
     useState<Coordinates>(initial_coordinates);
   const [ballCoordinates, setBallCoordinates] =
+    useState<Coordinates>(initial_coordinates);
+  const [appleCoordinates, setAppleCoordinates] =
+    useState<Coordinates>(initial_coordinates);
+  const [bananaCoordinates, setBananaCoordinates] =
+    useState<Coordinates>(initial_coordinates);
+  const [dogCoordinates, setDogCoordinates] =
     useState<Coordinates>(initial_coordinates);
 
   const animatedCatX = useRef(
@@ -59,6 +82,30 @@ function EditorScreen(): JSX.Element {
   ).current;
   const animatedBallRotation = useRef(new Animated.Value(0)).current;
 
+  const animatedAppleX = useRef(
+    new Animated.Value(initial_coordinates.x)
+  ).current;
+  const animatedAppleY = useRef(
+    new Animated.Value(initial_coordinates.y)
+  ).current;
+  const animatedAppleRotation = useRef(new Animated.Value(0)).current;
+
+  const animatedBananaX = useRef(
+    new Animated.Value(initial_coordinates.x)
+  ).current;
+  const animatedBananaY = useRef(
+    new Animated.Value(initial_coordinates.y)
+  ).current;
+  const animatedBananaRotation = useRef(new Animated.Value(0)).current;
+
+  const animatedDogX = useRef(
+    new Animated.Value(initial_coordinates.x)
+  ).current;
+  const animatedDogY = useRef(
+    new Animated.Value(initial_coordinates.y)
+  ).current;
+  const animatedDogRotation = useRef(new Animated.Value(0)).current;
+
   const animatedHelloOpacity = useRef(new Animated.Value(0)).current;
   const [helloText, setHelloText] = useState<string | null>(null);
   const helloCoordinates = useRef<Coordinates>(initial_coordinates);
@@ -70,38 +117,57 @@ function EditorScreen(): JSX.Element {
     setSprite(sprite);
   }
 
-  function changeCatCoordinates(coordinates: Coordinates) {
-    setCatCoordinates(coordinates);
-    animatedCatX.setValue(coordinates.x);
-    animatedCatY.setValue(coordinates.y);
-  }
-
-  function changeBallCoordinates(coordinates: Coordinates) {
-    setBallCoordinates(coordinates);
-    animatedBallX.setValue(coordinates.x);
-    animatedBallY.setValue(coordinates.y);
+  function changeCoordinates(sprite: Sprite, coordinates: Coordinates) {
+    switch (sprite) {
+      case "CAT":
+        setCatCoordinates(coordinates);
+        animatedCatX.setValue(coordinates.x);
+        animatedCatY.setValue(coordinates.y);
+        break;
+      case "BALL":
+        setBallCoordinates(coordinates);
+        animatedBallX.setValue(coordinates.x);
+        animatedBallY.setValue(coordinates.y);
+        break;
+      case "APPLE":
+        setAppleCoordinates(coordinates);
+        animatedAppleX.setValue(coordinates.x);
+        animatedAppleY.setValue(coordinates.y);
+        break;
+      case "BANANA":
+        setBananaCoordinates(coordinates);
+        animatedBananaX.setValue(coordinates.x);
+        animatedBananaY.setValue(coordinates.y);
+        break;
+      case "DOG":
+        setDogCoordinates(coordinates);
+        animatedDogX.setValue(coordinates.x);
+        animatedDogY.setValue(coordinates.y);
+        break;
+    }
   }
 
   function handleReset() {
     setCatAction([]);
     setBallAction([]);
-    changeBallCoordinates(initial_coordinates);
-    changeCatCoordinates(initial_coordinates);
+    setDogAction([]);
+    setAppleAction([]);
+    setBananaAction([]);
+    changeCoordinates("CAT", initial_coordinates);
+    changeCoordinates("BALL", initial_coordinates);
+    changeCoordinates("APPLE", initial_coordinates);
+    changeCoordinates("BANANA", initial_coordinates);
+    changeCoordinates("DOG", initial_coordinates);
     setCoordinates(initial_coordinates);
     setShowBall(false);
     setShowCat(false);
+    setShowApple(false);
+    setShowBanana(false);
+    setShowDog(false);
     setHelloText(null);
     setTimeout(() => {
       setShowCat(true);
     }, 100);
-  }
-
-  function handleShowBall(isShow: boolean = true) {
-    setShowBall(isShow);
-  }
-
-  function handleShowCat(isShow: boolean = true) {
-    setShowCat(isShow);
   }
 
   function handlePlay() {
@@ -191,6 +257,18 @@ function EditorScreen(): JSX.Element {
       x: ballCoordinates.x,
       y: ballCoordinates.y,
     };
+    let newAppleCoordinates = {
+      x: appleCoordinates.x,
+      y: appleCoordinates.y,
+    };
+    let newBananaCoordinates = {
+      x: bananaCoordinates.x,
+      y: bananaCoordinates.y,
+    };
+    let newDogCoordinates = {
+      x: dogCoordinates.x,
+      y: dogCoordinates.y,
+    };
 
     const catAnimations = processActions(
       catAction,
@@ -207,15 +285,46 @@ function EditorScreen(): JSX.Element {
       animatedBallRotation
     );
 
+    const appleAnimations = processActions(
+      appleAction,
+      newAppleCoordinates,
+      animatedAppleX,
+      animatedAppleY,
+      animatedAppleRotation
+    );
+    const bananaAnimations = processActions(
+      bananaAction,
+      newBananaCoordinates,
+      animatedBananaX,
+      animatedBananaY,
+      animatedBananaRotation
+    );
+    const dogAnimations = processActions(
+      dogAction,
+      newDogCoordinates,
+      animatedDogX,
+      animatedDogY,
+      animatedDogRotation
+    );
+
     setCatCoordinates(newCatCoordinates);
     setBallCoordinates(newBallCoordinates);
+    setAppleCoordinates(newAppleCoordinates);
+    setBananaCoordinates(newBananaCoordinates);
+    setDogCoordinates(newDogCoordinates);
 
     Animated.parallel([
       Animated.sequence(catAnimations),
       Animated.sequence(ballAnimations),
+      Animated.sequence(appleAnimations),
+      Animated.sequence(bananaAnimations),
+      Animated.sequence(dogAnimations),
     ]).start(() => {
       animatedCatRotation.setValue(0);
       animatedBallRotation.setValue(0);
+      animatedAppleRotation.setValue(0);
+      animatedBananaRotation.setValue(0);
+      animatedDogRotation.setValue(0);
     });
   }
 
@@ -280,6 +389,90 @@ function EditorScreen(): JSX.Element {
             />
           </Animated.View>
         )}
+        {showApple && (
+          <Animated.View
+            style={{
+              position: "absolute",
+              left: animatedAppleX,
+              top: animatedAppleY,
+              transform: [
+                {
+                  rotate: animatedAppleRotation.interpolate({
+                    inputRange: [0, 360],
+                    outputRange: ["0deg", "360deg"],
+                  }),
+                },
+              ],
+            }}
+          >
+            <Draggable
+              imageSource={icons.apple as number}
+              renderSize={DIMENSIONS.wp(15)}
+              onPressIn={(e) => handleInfo(e, "APPLE")}
+              onDragRelease={(e) => {
+                handleInfo(e, "APPLE");
+              }}
+              x={appleCoordinates.x}
+              y={appleCoordinates.y}
+            />
+          </Animated.View>
+        )}
+        {showBanana && (
+          <Animated.View
+            style={{
+              position: "absolute",
+              left: animatedBananaX,
+              top: animatedBananaY,
+              transform: [
+                {
+                  rotate: animatedBananaRotation.interpolate({
+                    inputRange: [0, 360],
+                    outputRange: ["0deg", "360deg"],
+                  }),
+                },
+              ],
+            }}
+          >
+            <Draggable
+              imageSource={icons.banana as number}
+              renderSize={DIMENSIONS.wp(15)}
+              onPressIn={(e) => handleInfo(e, "BANANA")}
+              onDragRelease={(e) => {
+                handleInfo(e, "BANANA");
+              }}
+              x={bananaCoordinates.x}
+              y={bananaCoordinates.y}
+            />
+          </Animated.View>
+        )}
+        {showDog && (
+          <Animated.View
+            style={{
+              position: "absolute",
+              left: animatedDogX,
+              top: animatedDogY,
+              transform: [
+                {
+                  rotate: animatedDogRotation.interpolate({
+                    inputRange: [0, 360],
+                    outputRange: ["0deg", "360deg"],
+                  }),
+                },
+              ],
+            }}
+          >
+            <Draggable
+              imageSource={icons.dog as number}
+              renderSize={DIMENSIONS.wp(20)}
+              onPressIn={(e) => handleInfo(e, "DOG")}
+              onDragRelease={(e) => {
+                handleInfo(e, "DOG");
+              }}
+              x={dogCoordinates.x}
+              y={dogCoordinates.y}
+            />
+          </Animated.View>
+        )}
         {helloText && (
           <Animated.View
             style={{
@@ -314,7 +507,7 @@ function EditorScreen(): JSX.Element {
         </TouchableOpacity>
       </View>
       <InfoBar sprite={sprite} coordinates={coordinates} />
-      <SpriteBar showBall={showBall} handleShowBall={handleShowBall} />
+      <SpriteBar />
     </View>
   );
 }

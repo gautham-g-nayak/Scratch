@@ -6,7 +6,7 @@ import {
 export type RootStackParamList = {
   EditorScreen: undefined;
   ActionScreen: {
-    isCat: boolean;
+    sprite: "CAT" | "BALL" | "APPLE" | "BANANA" | "DOG";
   };
 };
 

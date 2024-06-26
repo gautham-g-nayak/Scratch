@@ -25,6 +25,9 @@ const baseStyles = StyleSheet.create({
   bg_light: {
     backgroundColor: COLORS.bgLight,
   },
+  bg_modal: {
+    backgroundColor: COLORS.dark_overlay,
+  },
 
   // flexbox
   row: {

@@ -12,7 +12,8 @@
       "backgroundColor": "#2A71D4"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gauthamgnayak.scratch"
     },
     "android": {
       "adaptiveIcon": {

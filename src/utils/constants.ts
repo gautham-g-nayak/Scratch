@@ -12,7 +12,8 @@ const COLORS: Colors = {
   white: "#ffffff",
   border: "#cbd5e1",
   text: "#0F1734",
-  gray: "#F2F2F2",
+  gray: "gray",
+  dark_overlay: "rgba(0, 0, 0, 0.3)",
 };
 
 const SIZES: Sizing = {

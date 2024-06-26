@@ -3,6 +3,8 @@ export type StatusBarProps = {
   backgroundColor: string;
 };
 
+export type Sprite = "CAT" | "BALL" | "APPLE" | "BANANA" | "DOG";
+
 export type DimensionHelper = {
   width: number;
   height: number;
@@ -18,7 +20,8 @@ export type Colors = {
   border: "#cbd5e1";
   bgLight: "#eff3ff";
   text: "#0F1734";
-  gray: "#F2F2F2";
+  gray: "gray";
+  dark_overlay: "rgba(0, 0, 0, 0.3)";
 };
 
 export type Sizing = {
